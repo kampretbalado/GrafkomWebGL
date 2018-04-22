@@ -78,6 +78,8 @@ var UpperArm = 2;
 
 
 var theta= [ 0, 0, 0];
+var anim = 0;
+var animSign=1;
 
 var angle = 0;
 
@@ -252,9 +254,19 @@ function snakeBody() {
 
 var renderRobot = function() {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
-    var rotval = 45;
+        
+    var threshold = 45;
+
+    anim=anim+animSign;
+    if (anim>threshold){
+        animSign=-1;
+    }else if (anim<-threshold){
+        animSign=1;
+    }
+    var wiggle = anim ;
+
     var baseViewMatrix= rotate(theta[0], 0, 1, 0 );
-    var x=Number(theta[1]);
+    var x=Number(theta[1]) + wiggle;
     modelViewMatrix = rotate(theta[0], 0, 1, 0 );
     base();
     //right front
@@ -294,13 +306,26 @@ var renderRobot = function() {
     upperArm();
 }
 
-
+var turnflag = false;
 var renderSnake = function() {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
-    var rotval = 45;
     
-    var x=Number(theta[1]);
-    modelViewMatrix = rotate(x, 0, 0, 1 );
+    var threshold = 45;
+
+    anim=anim+animSign;
+    if (anim>threshold){
+        animSign=-1;
+    }else if (anim<-threshold){
+        animSign=1;
+    }
+    var wiggle = anim ;
+    //var wiggle =(anim % threshold*2) * Math.pow(-1,Math.floor(anim/threshold*2)) + threshold*2 * (Math.floor(anim/threshold*2)%2);
+    //console.log(Math.pow(-1,Math.floor(anim/threshold*2)));
+    var x=Number(theta[1]) + wiggle;
+    console.log(x);
+    modelViewMatrix = rotate(theta[0], 0, 1, 0 );
+    modelViewMatrix  = mult(modelViewMatrix, rotate(theta[2], 1, 0, 0) );
+    modelViewMatrix  = mult(modelViewMatrix, rotate(x, 0, 0, 1) );
     snakeBody();
 
     modelViewMatrix  = mult(modelViewMatrix, translate(0.0, snake.length, 0.0));
