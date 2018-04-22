@@ -146,19 +146,52 @@ window.onload = function init() {
     gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vColor );
 
-    document.getElementById("slider1").onchange = function(event) {
+    document.getElementById("snake1").onchange = function(event) {
         theta[0] = event.target.value;
     };
-    document.getElementById("slider2").onchange = function(event) {
+    document.getElementById("snake2").onchange = function(event) {
          theta[1] = event.target.value;
     };
+    document.getElementById("snake3").onchange = function(event) {
+         theta[2] =  event.target.value;
+    };
+    document.getElementById("robot1").onchange = function(event) {
+        theta[0] = event.target.value;
+    };
+    document.getElementById("robot2").onchange = function(event) {
+         theta[1] = event.target.value;
+    };
+
 
     modelViewMatrixLoc = gl.getUniformLocation(program, "modelViewMatrix");
 
     projectionMatrix = ortho(-10, 10, -10, 10, -10, 10);
     gl.uniformMatrix4fv( gl.getUniformLocation(program, "projectionMatrix"),  false, flatten(projectionMatrix) );
 
-    render();
+    display();
+    
+}
+
+var display = function () {
+    requestAnimFrame(display);
+    var radios = document.getElementsByName('model');
+
+    for (var i = 0, length = radios.length; i < length; i++) {
+        if (radios[i].checked && radios[i].value == "robot") {
+            // do whatever you want with the checked radio
+            document.getElementById("robotParam").style.display = "block";
+            document.getElementById("spiderParam").style.display = "none";
+            renderRobot();
+            
+            // only one radio can be logically checked, don't check the rest
+            break;
+        } else if (radios[i].checked && radios[i].value == "snake") {
+            document.getElementById("robotParam").style.display = "none";
+            document.getElementById("spiderParam").style.display = "block";
+            renderSnake();
+            break;
+        }
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -185,8 +218,7 @@ function upperArm() {
 
 //----------------------------------------------------------------------------
 
-var render = function() {
-
+var renderRobot = function() {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
     var rotval = 45;
     var baseViewMatrix= rotate(theta[Base], 0, 1, 0 );
@@ -228,6 +260,49 @@ var render = function() {
     modelViewMatrix  = mult(modelViewMatrix, translate(0.0 ,UPPER_ARM_HEIGHT, 0.0));
     modelViewMatrix  = mult(modelViewMatrix, rotate(x+90, 0, 0, 1) );
     upperArm();
+}
 
-    requestAnimFrame(render);
+
+var renderSnake = function() {
+    gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+    var rotval = 45;
+    
+    var x=Number(theta[LowerArm]);
+    modelViewMatrix = rotate(x, 0, 0, 1 );
+    upperArm();
+
+    modelViewMatrix  = mult(modelViewMatrix, translate(0.0,  UPPER_ARM_HEIGHT, 0.0));
+    modelViewMatrix  = mult(modelViewMatrix, rotate(-theta[LowerArm], 0, 0, 1) );
+    upperArm();
+
+    modelViewMatrix  = mult(modelViewMatrix, translate(0.0, UPPER_ARM_HEIGHT, 0.0));
+    modelViewMatrix  = mult(modelViewMatrix, rotate(-theta[LowerArm], 0, 0, 1) );
+    upperArm();
+
+    //pos
+    modelViewMatrix  = mult(modelViewMatrix, translate(0.0, UPPER_ARM_HEIGHT, 0.0));
+    modelViewMatrix  = mult(modelViewMatrix, rotate(theta[LowerArm], 0, 0, 1) );
+    upperArm();
+    
+    modelViewMatrix  = mult(modelViewMatrix, translate(0.0,  UPPER_ARM_HEIGHT, 0.0));
+    modelViewMatrix  = mult(modelViewMatrix, rotate( theta[LowerArm], 0, 0, 1) );
+    upperArm();
+
+    modelViewMatrix  = mult(modelViewMatrix, translate(0.0, UPPER_ARM_HEIGHT, 0.0));
+    modelViewMatrix  = mult(modelViewMatrix, rotate(-theta[LowerArm], 0, 0, 1) );
+    upperArm();
+
+    // //neg
+    modelViewMatrix  = mult(modelViewMatrix, translate(0.0, UPPER_ARM_HEIGHT, 0.0));
+    modelViewMatrix  = mult(modelViewMatrix, rotate(-theta[LowerArm], 0, 0, 1) );
+    upperArm();
+    
+    modelViewMatrix  = mult(modelViewMatrix, translate(0.0,  UPPER_ARM_HEIGHT, 0.0));
+    modelViewMatrix  = mult(modelViewMatrix, rotate(theta[LowerArm], 0, 0, 1) );
+    upperArm();
+
+    modelViewMatrix  = mult(modelViewMatrix, translate(0.0, UPPER_ARM_HEIGHT, 0.0));
+    modelViewMatrix  = mult(modelViewMatrix, rotate(theta[LowerArm], 0, 0, 1) );
+    upperArm();
+
 }

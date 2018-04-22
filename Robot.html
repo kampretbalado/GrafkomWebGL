@@ -28,28 +28,59 @@ void main()
 }
 </script>
 
-<script type="text/javascript" src="Common/webgl-utils.js"></script>
-<script type="text/javascript" src="Common/initShaders.js"></script>
-<script type="text/javascript" src="Common/MV.js"></script>
+<script type="text/javascript" src="js/common/webgl-utils.js"></script>
+<script type="text/javascript" src="js/common/initShaders.js"></script>
+<script type="text/javascript" src="js/common/MV.js"></script>
 <script type="text/javascript" src="Robot.js"></script>
 
-<div>
-body angle 0 <input id="slider1" type="range"
- min="-180" max="180" step="10" value="0" autocomplete = "off"
-  />
- 180
-</div><br/>
-
-<div>
-lower arm angle -180 <input id="slider2" type="range"
- min="-45" max="45" step="5" value="0" autocomplete = "off"
-  />
- 180
-</div><br/>
 
 <body>
-<canvas id="gl-canvas" width="512"" height="512">
-Oops ... your browser doesn't support the HTML5 canvas element
-</canvas>
+    <form action="" autocomplete="off">
+        <input type="radio" name="model" value="snake" checked="checked">Snake<br>
+        <input type="radio" name="model" value="robot">Robot<br>
+    </form>
+    <div id="robotParam">
+        <div>
+        body angle 0 <input id="robot1" type="range"
+            min="-180" max="180" step="10" value="0" autocomplete = "off"
+            />
+            180
+        </div><br/>
+        
+        <div>
+        lower arm angle -180 <input id="robot2" type="range"
+            min="-45" max="45" step="5" value="0" autocomplete = "off"
+            />
+            180
+        </div><br/>
+    </div>
+    
+    <div id="spiderParam">
+        <div>
+        body angle 0 <input id="snake1" type="range"
+         min="-180" max="180" step="10" value="0" autocomplete = "off"
+          />
+         180
+        </div><br/>
+        
+        <div>
+        lower arm angle -180 <input id="snake2" type="range"
+         min="-45" max="45" step="5" value="0" autocomplete = "off"
+          />
+         180
+        </div><br/>
+        
+        <div>
+        upper arm angle -180 <input id="snake3" type="range"
+         min="-45" max="45" step="5" value="0" autocomplete = "off"
+          />
+         180
+        </div><br/>
+    </div>       
+            
+            
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
 </body>
 </html>
