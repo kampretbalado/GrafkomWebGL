@@ -231,7 +231,7 @@ window.onload = function init() {
     projectionMatrix = ortho(-10, 10, -10, 10, -10, 10);
     gl.uniformMatrix4fv( gl.getUniformLocation(program, "projectionMatrix"),  false, flatten(projectionMatrix) );
 
-    render();
+    renderRobot();
 }
 
 //----------------------------------------------------------------------------
@@ -278,7 +278,7 @@ function lightBox() {
     gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
 }
 
-var render = function() {
+var renderRobot = function() {
 
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 
@@ -296,5 +296,5 @@ var render = function() {
     modelViewMatrix  = mult(modelViewMatrix, rotate(theta[UpperArm], 0, 0, 1) );
     upperArm();
 
-    requestAnimFrame(render);
+    requestAnimFrame(renderRobot);
 }
