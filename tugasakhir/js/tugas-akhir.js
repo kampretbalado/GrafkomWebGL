@@ -11,7 +11,7 @@ function initCanvas() {
   gl.viewportWidth = canvas.width;
   gl.viewportHeight = canvas.height;
 
-  camera = new Camera(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0)
+  camera = new Camera(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
 
 }
 
@@ -320,9 +320,10 @@ function draw() {
     var worldMatrix = objects[i].getWorldMatrix();
     //var worldMatrix = translate(0,0,-10);
 
-    mvp = mult(camera.viewMatrix, worldMatrix);
+    mvp = mult(camera.getViewMatrix(), worldMatrix);
+    //mvp = mult(camera.projectionMatrix, worldMatrix);
     mvp = mult(camera.projectionMatrix, mvp);
-    mvp = mult(mvp,rotate(r, [1,1,1]));
+    //mvp = mult(mvp,rotate(r, [1,1,1]));
     
     //gl.uniformMatrix4fv(program.modelMatrixUniform, false, flatten(worldMatrix));
     gl.uniformMatrix4fv(shader.program.worldMatrixUniform, false, flatten(mvp));
@@ -339,21 +340,163 @@ function draw() {
     
 }
 var lastTime = 0;
-
+var deltaTime = 0;
 function animate() {
     var timeNow = new Date().getTime();
     if (lastTime != 0) {
-        var elapsed = timeNow - lastTime;
+        deltaTime = timeNow - lastTime;
 
-        r += (90 * elapsed) / 1000.0;
+        r += (90 * deltaTime) / 1000.0;
     }
     lastTime = timeNow;
+    
+}
+
+var currentlyPressedKeys = {};
+
+// 
+function handleKeyDown(event) {
+    currentlyPressedKeys[event.keyCode] = true;
+
+    // one press
+    if (String.fromCharCode(event.keyCode) == "F") {
+      //do something
+    }
+
+    console.log(String.fromCharCode(event.keyCode));
+}
+
+
+function handleKeyUp(event) {
+    currentlyPressedKeys[event.keyCode] = false;
+}
+
+//keys
+var forward = 0;
+var backward = 0
+var left = 0;
+var right = 0;
+var rise = 0;
+var low = 0
+var lookleft = 0;
+var lookright = 0;
+var lookup = 0;
+var lookdown = 0;
+var rollforward = 0;
+var rollbackward = 0;
+
+
+// multi press
+// https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
+function handleKeys() {
+    if (currentlyPressedKeys[87]) {
+      // W
+      forward = 1.0;
+    } else if (!currentlyPressedKeys[87]) {
+      forward = 0.0;
+    }
+
+    if (currentlyPressedKeys[65]) {
+      // A
+      left = 1.0;
+    } else if (!currentlyPressedKeys[65]) {
+      left = 0.0;
+    }
+
+    if (currentlyPressedKeys[83]) {
+      // S
+      backward = 1.0;
+    } else if (!currentlyPressedKeys[83]) {
+      backward = 0.0;
+    }
+
+    if (currentlyPressedKeys[68]) {
+      // D
+      right = 1.0;
+    } else if (!currentlyPressedKeys[68]) {
+      right = 0.0;
+    }
+
+    if (currentlyPressedKeys[69]) {
+      // E
+      rise = 1.0;
+    }
+    else if (!currentlyPressedKeys[69]) {
+      rise = 0.0;
+    }
+
+    if (currentlyPressedKeys[81]) {
+      // Q
+      low = 1.0;
+    } else if (!currentlyPressedKeys[81]) {
+      low = 0.0;
+    }
+
+    if (currentlyPressedKeys[38]) {
+      // VK_UP
+      lookup = 1.0;
+    } else if (!currentlyPressedKeys[38]) {
+      lookup = 0.0;
+    }
+
+    if (currentlyPressedKeys[40]) {
+      // VK_DOWN
+      lookdown = 1.0;
+    } else if (!currentlyPressedKeys[40]) {
+      lookdown = 0.0;
+    }
+
+    if (currentlyPressedKeys[37]) {
+      // VK_LEFT
+      lookleft = 1.0;
+    } else if (!currentlyPressedKeys[37]) {
+      lookleft = 0.0;
+    }
+    
+    if (currentlyPressedKeys[39]) {
+      // VK_RIGHT
+      lookright = 1.0;
+    } else if (!currentlyPressedKeys[39]) {
+      lookright = 0.0;
+    }
+
+    if (currentlyPressedKeys[90]) {
+      // Z
+      rollforward = 1.0;
+    } else if (!currentlyPressedKeys[90]) {
+      rollforward = 0.0;
+    }
+
+    if (currentlyPressedKeys[67]) {
+      // C
+      rollbackward = 1.0;
+    } else if (!currentlyPressedKeys[67]) {
+      rollbackward = 0.0;
+    }
+}
+
+function movement() {
+  var moveVector = scale(deltaTime/1000, vec3(right - left, rise - low, backward - forward));
+  moveVector = vec4(moveVector, 1.0);
+  //console.log("mov:"+ moveVector);
+  camera.moveCamera(moveVector);
+  
+  //console.log(camera.getViewMatrix());
+  //console.log(camera.getWorldMatrix());
+  var rotVector = scale(deltaTime/1000, vec3(lookdown - lookup, lookright - lookleft, rollforward - rollbackward));
+  rotVector = vec4(rotVector, 1.0);
+  camera.rotateCamera(rotVector);
+  console.log("rot: "+camera.rotation);
 }
 
 function tick() {
   requestAnimFrame(tick);
-  draw();
   animate();
+  handleKeys();
+  movement();
+  draw();
+  
+  
 }
 
 window.onload = function init() {
@@ -365,6 +508,9 @@ window.onload = function init() {
 
   gl.clearColor(0.4, 0.4, 0.4, 1.0);
   gl.enable(gl.DEPTH_TEST);
+
+  document.onkeydown = handleKeyDown;
+  document.onkeyup = handleKeyUp;
 
   tick();
 }

@@ -12,17 +12,29 @@ class GameObject {
 
   set position(pos) {
     this._position = pos;
-    this._isDirty = true;
+    this.isDirty = true;
+  }
+
+  get position() {
+    return this._position;
   }
 
   set rotation(rot) {
     this._rotation = rot;
-    this._isDirty = true;
+    this.isDirty = true;
+  }
+
+  get rotation() {
+    return this._rotation;
   }
 
   set scale(sc) {
     this._scale = sc;
-    this._isDirty = true;
+    this.isDirty = true;
+  }
+
+  get scale() {
+    return this._scale;
   }
 
   setTransform (pos, rot, sc) {
@@ -33,21 +45,21 @@ class GameObject {
   }
 
   getWorldMatrix() {
-    if (this._isDirty) {
+    if (this.isDirty) {
       var scaleMatrix = scalem(this._scale[0], this._scale[1], this._scale[2]);
       
       var rotX = rotateX(this._rotation[0]);
       var rotY = rotateY(this._rotation[1]);
       var rotZ = rotateZ(this._rotation[2]);
 
-      var rotMatrix = mult(mult(rotZ, rotX), rotY);
+      var rotMatrix = mult(rotY, mult(rotX, rotZ));
       
       var transMatrix = translate(this._position[0], this._position[1], this._position[2]);
       
       var world = mult(rotMatrix, scaleMatrix);
-      this._worldMatrix = mult(world, transMatrix);
+      this._worldMatrix = mult(transMatrix, world);
 
-      this._isDirty = false;
+      this.isDirty = false;
     }
     
     return this._worldMatrix;
@@ -58,42 +70,107 @@ class GameObject {
 class Camera {
   constructor(fov, aspect, near, far) {
     this.viewMatrix = mat4();
+    
+    this.worldMatrix = mat4();
+    
+    this.projectionMatrix = perspective(fov, aspect, near, far);
+    
     this.position = vec3(0,0,0);
     this.rotation = vec3(0,0,0);
-    this.projectionMatrix = perspective(fov, aspect, near, far);
+    
     this.fov = fov;
     this.aspect = aspect;
     this.near = near;
     this.far = far;
     this.isDirty = true;
+    
+    this.speed = 1.0;
+
+    this.applyWorldMatrix();
+    this.applyViewMatrix();
   }
-
-  getViewMatrix() {
-    if (this._isDirty) {
-      var invTranslation = translate(-this._position[0],-this._position[1],-this._position[2]);
-      invTranslation = transpose(invTranslation);
-    
-      var invRotationX = rotateX(-this._rotation[0]);
-      var invRotationY = rotateY(-this._rotation[1]);
-      var invRotationZ = rotateZ(-this._rotation[2]);
-    
-      var invRotation = mult(mult(invRotationY, invRotationX), invRotationZ);
-    
-      this._viewMatrix = mult(invTranslation, invRotation);
-
-      this._isDirty = false;
-    }
-    return this._viewMatrix;
-  }
-
+  
   set position(pos){
     this._position = pos;
-    this._isDirty = true;
+    this.isDirty = true;
+  }
+
+  get position() {
+    return this._position;
   }
 
   set rotation(rot){
     this._rotation = rot;
-    this._isDirty = true;
+    this.isDirty = true;
+  }
+
+  get rotation() {
+    return this._rotation;
+  }
+
+  applyViewMatrix() {
+  
+    var invTranslation = translate(-this._position[0],-this._position[1],-this._position[2]);
+  
+    var invRotationX = rotateX(-this._rotation[0]);
+    var invRotationY = rotateY(-this._rotation[1]);
+    var invRotationZ = rotateZ(-this._rotation[2]);
+  
+    var invRotation = mult(invRotationZ, mult(invRotationX, invRotationY));
+  
+    this._viewMatrix = mult(invRotation, invTranslation);
+  
+    return this._viewMatrix;
+  }
+  
+  applyWorldMatrix() {
+         
+    var rotX = rotateX(this._rotation[0]);
+    var rotY = rotateY(this._rotation[1]);
+    var rotZ = rotateZ(this._rotation[2]);
+
+    var rotMatrix = mult(rotY, mult(rotX, rotZ));
+    
+    var transMatrix = translate(this._position[0], this._position[1], this._position[2]);
+    
+    this._worldMatrix = mult(transMatrix, rotMatrix);
+    
+    return this._worldMatrix;
+  }
+
+  getWorldMatrix() {
+    if (this._isDirty) {
+      this.applyViewMatrix();
+      this.applyWorldMatrix();
+    }
+    this.isDirty = false;
+    return this._worldMatrix;
+  }
+
+  getViewMatrix() {
+    if (this.isDirty) {
+      this.applyViewMatrix();
+      this.applyWorldMatrix();
+    }
+    this.isDirty = false;
+    return this._viewMatrix;
+  }
+
+  moveCamera(moveVector) {
+    var s = this.speed;
+    var temp = scale(s , moveVector);
+    
+    temp = mult(this.getWorldMatrix(), temp);
+    
+    temp = vec3(temp);
+    this._position = temp;
+    this.isDirty = true;
+  }
+
+  rotateCamera(rotVector) {
+    var rot = scale(this.speed*20, rotVector);
+    this._rotation = add(vec3(rot), this._rotation);
+    this.isDirty = true;
   }
 
 }
