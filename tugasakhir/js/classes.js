@@ -68,7 +68,7 @@ class GameObject {
 
 
 class Camera {
-  constructor(fov, aspect, near, far) {
+  constructor(fov, aspect, near, far, speed) {
     this.viewMatrix = mat4();
     
     this.worldMatrix = mat4();
@@ -84,7 +84,7 @@ class Camera {
     this.far = far;
     this.isDirty = true;
     
-    this.speed = 1.0;
+    this.speed = speed;
 
     this.applyWorldMatrix();
     this.applyViewMatrix();
@@ -159,8 +159,10 @@ class Camera {
   moveCamera(moveVector) {
     var s = this.speed;
     var temp = scale(s , moveVector);
+    temp = vec4(temp, 1.0);
     
     temp = mult(this.getWorldMatrix(), temp);
+    //temp = add(this._position, vec3(temp));
     
     temp = vec3(temp);
     this._position = temp;

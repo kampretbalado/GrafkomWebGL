@@ -11,7 +11,7 @@ function initCanvas() {
   gl.viewportWidth = canvas.width;
   gl.viewportHeight = canvas.height;
 
-  camera = new Camera(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
+  camera = new Camera(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, 5);
 
 }
 
@@ -477,7 +477,6 @@ function handleKeys() {
 
 function movement() {
   var moveVector = scale(deltaTime/1000, vec3(right - left, rise - low, backward - forward));
-  moveVector = vec4(moveVector, 1.0);
   //console.log("mov:"+ moveVector);
   camera.moveCamera(moveVector);
   
@@ -486,16 +485,15 @@ function movement() {
   var rotVector = scale(deltaTime/1000, vec3(lookdown - lookup, lookright - lookleft, rollforward - rollbackward));
   rotVector = vec4(rotVector, 1.0);
   camera.rotateCamera(rotVector);
-  console.log("rot: "+camera.rotation);
+  
 }
 
 function tick() {
   requestAnimFrame(tick);
   animate();
+  draw();
   handleKeys();
   movement();
-  draw();
-  
   
 }
 
