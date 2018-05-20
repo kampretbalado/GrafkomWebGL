@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <!--
+        Program tugas-akhir.html
+        Program ini dibuat untuk memenuhi tugas akhir mata kuliah grafika komputer
+
+        Dibuat oleh:
+        Muhammad Azmi Malik Ariefa - 1406623184 - malik.ariefa@gmail.com
+        Firas Atha Muhtadi - 1406579246 - vrasath@gmail.com
+    -->
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+
+    <script id="texture-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_pos;
+        attribute vec2 a_texCoord;
+        
+        varying vec2 v_texCoord;
+    
+        uniform mat4 u_worldMatrix;
+    
+        void main()
+        {
+          gl_Position = u_worldMatrix * a_pos;
+          v_texCoord = a_texCoord;
+        }
+    </script>
+    
+    <script id="texture-fragment-shader" type="x-shader/x-fragment">
+    
+        precision mediump float;
+    
+        varying vec2 v_texCoord;
+  
+        uniform sampler2D u_sampler;
+    
+        void main()
+        {
+            gl_FragColor = texture2D(u_sampler, vec2(v_texCoord.s, v_texCoord.t));
+        }
+        
+    </script>
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+      attribute  vec4 a_pos;
+      attribute  vec4 a_color;
+      
+      varying vec4 fColor;
+  
+      uniform mat4 u_worldMatrix;
+  
+      void main()
+      {
+        gl_Position = u_worldMatrix * a_pos;
+        fColor = a_color;
+      }
+  </script>
+  
+  <script id="fragment-shader" type="x-shader/x-fragment">
+  
+      precision mediump float;
+  
+      varying  vec4 fColor;
+  
+      void main()
+      {
+          gl_FragColor = fColor;
+      }
+      
+  </script>
+  
+  <script type="text/javascript" src="../Common/webgl-utils.js"></script>
+  <script type="text/javascript" src="../Common/initShaders.js"></script>
+  <script type="text/javascript" src="../Common/MV.js"></script>
+  <script type="text/javascript" src="js/tugas-akhir.js"></script>  
+</head>
+
+<body>
+    <canvas id="gl-canvas" width="512" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+</body>
+</html>
