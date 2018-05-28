@@ -1,4 +1,3 @@
-
 class GameObject {
   constructor() {
     this.worldMatrix = mat4();
@@ -7,7 +6,9 @@ class GameObject {
     this.scale = vec3(1,1,1);
     this.isDirty = true;
     this.model = 0;
-    this.shader = 0;
+    this.shader = 0; // of Shader type
+    this.angle = 0;
+    this.axis = vec3(0,0,0);
   }
 
   set position(pos) {
@@ -44,16 +45,28 @@ class GameObject {
     this._isDirty = true;
   }
 
+  rotateObj (angle, axis) {
+    this.angle = angle;
+    this._axis = axis;
+    this._isDirty = true;
+  }
+
   getWorldMatrix() {
     if (this.isDirty) {
       var scaleMatrix = scalem(this._scale[0], this._scale[1], this._scale[2]);
-      
+      /*
       var rotX = rotateX(this._rotation[0]);
       var rotY = rotateY(this._rotation[1]);
       var rotZ = rotateZ(this._rotation[2]);
 
       var rotMatrix = mult(rotY, mult(rotX, rotZ));
-      
+      */
+     var rotX = rotate(this._rotation[0], vec3(1.0, 0.0, 0.0));
+     var rotY = rotate(this._rotation[1], vec3(0.0, 1.0, 0.0));
+     var rotZ = rotate(this._rotation[2], vec3(0.0, 0.0, 1.0));
+
+     var rotMatrix = mult(rotY, mult(rotX, rotZ));
+
       var transMatrix = translate(this._position[0], this._position[1], this._position[2]);
       
       var world = mult(rotMatrix, scaleMatrix);
@@ -112,9 +125,9 @@ class Camera {
   
     var invTranslation = translate(-this._position[0],-this._position[1],-this._position[2]);
   
-    var invRotationX = rotateX(-this._rotation[0]);
-    var invRotationY = rotateY(-this._rotation[1]);
-    var invRotationZ = rotateZ(-this._rotation[2]);
+    var invRotationX = rotate(-this._rotation[0], vec3(1.0, 0.0, 0.0));
+    var invRotationY = rotate(-this._rotation[1], vec3(0.0, 1.0, 0.0));
+    var invRotationZ = rotate(-this._rotation[2], vec3(0.0, 0.0, 1.0));
   
     var invRotation = mult(invRotationZ, mult(invRotationX, invRotationY));
   
@@ -125,9 +138,9 @@ class Camera {
   
   applyWorldMatrix() {
          
-    var rotX = rotateX(this._rotation[0]);
-    var rotY = rotateY(this._rotation[1]);
-    var rotZ = rotateZ(this._rotation[2]);
+    var rotX = rotate(this._rotation[0], vec3(1.0, 0.0, 0.0));
+    var rotY = rotate(this._rotation[1], vec3(0.0, 1.0, 0.0));
+    var rotZ = rotate(this._rotation[2], vec3(0.0, 0.0, 1.0));
 
     var rotMatrix = mult(rotY, mult(rotX, rotZ));
     
@@ -200,11 +213,17 @@ class Model{
       address : "",
       image : 0
     };
+    this.normalInfo = {
+      buffer : 0,
+      itemSize : 0,
+      numItems : 0
+    }
     
     this.vertices = [];
     this.indices = [];
     this.colors = [];
     this.textureCoordinate = [];
+    this.vertexNormal = [];
   }
 
   modelFromFile(path) {
@@ -225,11 +244,16 @@ class Vertex {
 }
 
 class Light {
-  constructor() {
-    this.position = new vec4();
-    this.ambient = new vec4();
-    this.diffuse = new vec4();
-    this.specular = new vec4();
+  constructor(type) {
+    this.position = new vec3(0.0, 0.0, 0.0);
+    this.lightDirection = new vec3(1.0, 1.0, 1.0);
+    this.lightColor = new vec4(0.8, 0.8, 0.8);
+    this.specularPower = 5.0;
+    this.spotLimit = 30.0; // in degrees
+    
+    // 0 = spot, 1 = directional, 2 = point
+    this.type = type
+
   }
 }
 
@@ -251,12 +275,6 @@ class Shader {
 
     this.vertexShader = vs;
     this.fragmentShader = fs;
-    
-    this.positionAttribute = 0;
-    this.colorAttribute = 0;
-    this.textureCoordAttribute = 0;
-
-    this.worldMatrixUniform = 0;
-    this.samplerUniform = 0;
+  
   }
 }

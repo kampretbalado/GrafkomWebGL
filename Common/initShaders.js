@@ -1,15 +1,18 @@
 //
 //  initShaders.js
+// MODIFIKASI UNTUK MENERIMA DOM, bukan ID dari shader agar 
+// dapat dimodifikasi pada saat runtime
 //
 
-function initShaders( gl, vertexShaderId, fragmentShaderId )
+function initShaders( gl, vertexShaderDOM, fragmentShaderDOM )
 {
     var vertShdr;
     var fragShdr;
 
-    var vertElem = document.getElementById( vertexShaderId );
+    var vertElem = vertexShaderDOM; 
     if ( !vertElem ) { 
-        alert( "Unable to load vertex shader " + vertexShaderId );
+        alert( "Unable to load vertex shader " + vertexShaderDOM.id );
+        //console.log(vertexShaderDOM);
         return -1;
     }
     else {
@@ -24,9 +27,10 @@ function initShaders( gl, vertexShaderId, fragmentShaderId )
         }
     }
 
-    var fragElem = document.getElementById( fragmentShaderId );
+    var fragElem = fragmentShaderDOM;
     if ( !fragElem ) { 
-        alert( "Unable to load vertex shader " + fragmentShaderId );
+        alert( "Unable to load vertex shader " + fragmentShaderDOM.id );
+        //console.log(fragmentShaderDOM);
         return -1;
     }
     else {

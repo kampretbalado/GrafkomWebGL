@@ -13,31 +13,178 @@
     <meta content="utf-8" http-equiv="encoding">
 
     <script id="texture-vertex-shader" type="x-shader/x-vertex">
+        #define NUM_LIGHTS %(numLights)s
+        #define USE_LIGHT %(useLight)s
+        
         attribute vec4 a_pos;
         attribute vec2 a_texCoord;
-        
-        varying vec2 v_texCoord;
+        attribute vec3 a_vertexNormal;
     
         uniform mat4 u_worldMatrix;
-    
+        uniform mat4 u_modelMatrix;
+        
+        uniform vec3 u_cameraPosition;
+
+        uniform vec3 u_lightPosition[NUM_LIGHTS];
+        
+        varying vec2 v_texCoord;
+        varying vec3 v_vertexNormal;
+        varying vec3 v_surfaceToView;
+
+        varying float v_lightType[NUM_LIGHTS];
+        varying vec3 v_lightDirection[NUM_LIGHTS];
+        varying float v_distance[NUM_LIGHTS];
+        varying vec3 v_surfaceToLight[NUM_LIGHTS];
+        
         void main()
         {
-          gl_Position = u_worldMatrix * a_pos;
-          v_texCoord = a_texCoord;
+            gl_Position = u_worldMatrix * a_pos;
+            v_texCoord = a_texCoord;
+            if (USE_LIGHT) {
+                vec3 normal = vec3(u_modelMatrix * vec4(a_vertexNormal, 0.0));
+                v_vertexNormal = normalize(normal);
+
+                vec4 to_eye = (vec4(u_cameraPosition, 1.0)) - (u_modelMatrix * a_pos);
+                v_surfaceToView = normalize(vec3(to_eye));
+            
+                for (int i = 0; i < NUM_LIGHTS; i++) {
+                    vec4 to_light = (vec4(u_lightPosition[i], 1.0)) - (u_modelMatrix * a_pos);
+                    v_lightDirection[i] = -normalize(vec3(to_light));
+                    v_distance[i] = length(vec3(to_light));
+                    v_surfaceToLight[i] = normalize(vec3(to_light));
+                }
+            }
         }
     </script>
     
     <script id="texture-fragment-shader" type="x-shader/x-fragment">
-    
+        #define ATT_CONST 1.0
+        #define ATT_LINEAR 0.01
+        #define ATT_QUAD 0.0001
+        #define NUM_LIGHTS %(numLights)s
+        #define USE_LIGHT %(useLight)s
+
         precision mediump float;
+        
+        uniform int u_lightType[NUM_LIGHTS];
+
+        uniform vec4 u_ambientColor;
+        uniform float u_ambientWeight;
+
+        uniform vec3 u_lightDirection[NUM_LIGHTS];
+        uniform vec4 u_directionColor[NUM_LIGHTS];
+        uniform float u_specularPower[NUM_LIGHTS];
+
+        uniform float u_spotLimit[NUM_LIGHTS];
     
-        varying vec2 v_texCoord;
-  
         uniform sampler2D u_sampler;
+
+        varying vec2 v_texCoord;
+        varying vec3 v_vertexNormal;
+        varying vec3 v_surfaceToView;
+        varying vec3 v_surfaceToLight[NUM_LIGHTS];
+
+        varying float v_lightType[NUM_LIGHTS];
+        varying vec3 v_lightDirection[NUM_LIGHTS];
+        varying float v_distance[NUM_LIGHTS];
+  
     
         void main()
         {
-            gl_FragColor = texture2D(u_sampler, vec2(v_texCoord.s, v_texCoord.t));
+            if (USE_LIGHT) {
+                vec3 surfaceToView = normalize(v_surfaceToView);
+                vec3 normal = normalize(v_vertexNormal);
+                vec4 textureColor = texture2D(u_sampler, vec2(v_texCoord.s, v_texCoord.t));
+
+                vec4 ambientComponent = u_ambientColor;
+                float ambientWeightComponent = u_ambientWeight;
+
+                vec4 diffuseComponent = vec4(0,0,0,0);
+                vec4 specularComponent = vec4(0,0,0,0);
+
+                for (int i = 0; i < NUM_LIGHTS; i++) {
+                    if (u_lightType[i] == 0) {
+                        // for spotlight
+                        vec3 spotLightDirection = normalize(u_lightDirection[i]);
+                        vec3 surfaceToLight = normalize(v_surfaceToLight[i]);
+                        
+                        vec4 lightColor = u_directionColor[i];
+                        float lightDistance = v_distance[i];
+                        float specularPower = u_specularPower[i];
+
+                        float light = 0.0;
+                        float specular = 0.0;
+                        
+                        vec3 halfVector = normalize (surfaceToLight + surfaceToView);
+                        float dotFromDirection = dot(surfaceToLight, -spotLightDirection);
+                        if (dotFromDirection >= u_spotLimit[i]) {
+                            light = dot(normal, surfaceToLight);
+                            if (light > 0.0) {
+                              specular = pow(dot(normal, halfVector), specularPower);
+                            }
+                        }
+
+                        gl_FragColor = lightColor;
+
+                        // Lets multiply just the color portion (not the alpha)
+                        // by the light
+                        gl_FragColor.rgb *= light;
+                      
+                        // Just add in the specular
+                        gl_FragColor.rgb += specular;
+
+                        
+                        //diffuseComponent = diffuseComponent + lightColor * light;
+                        //specularComponent = specularComponent + lightColor * specular;
+                    } 
+                    if (u_lightType[i] == 1) {
+                        // for diffuse
+                        vec3 lightDirection = u_lightDirection[i];
+                        //vec3 lightDirection = vec3(-1.0, -1.0, 0.0);
+                        vec4 lightColor = u_directionColor[i];
+                        //vec4 lightColor = vec4(1.0, 1.0, 1.0, 1.0);
+                        float lightWeight = dot(normal, -normalize(lightDirection));
+                        vec4 diffuseColor = max(lightWeight, 0.0) * lightColor;
+                        diffuseComponent = diffuseComponent + diffuseColor;
+
+                        // for specular
+                        float specularPower = u_specularPower[i];
+                        vec3 reflectVector = normalize(reflect(lightDirection, normal));
+                        vec4 specularColor = pow(max(dot(reflectVector,surfaceToView),0.0), specularPower) * lightColor;
+                        specularComponent = specularComponent + specularColor;
+                    }
+                    if (u_lightType[i] == 2) {
+                        vec3 lightDirection = v_lightDirection[i];
+                        float lightWeight = dot(normal, -normalize(lightDirection));
+                        vec4 lightColor = u_directionColor[i];
+                        vec4 diffuseColor = max(lightWeight, 0.0) * lightColor;
+                        float lightDistance = v_distance[i];
+                        
+                        // for specular
+                        float specularPower = u_specularPower[i];
+                        vec3 reflectVector = normalize(reflect(lightDirection, normal));
+                        vec4 specularColor = pow(max(dot(reflectVector,surfaceToView),0.0), specularPower) * lightColor;
+                        float Attenuation = 1.0 / (ATT_CONST + ATT_LINEAR * lightDistance + ATT_QUAD * lightDistance * lightDistance);
+
+                        diffuseComponent = diffuseComponent + diffuseColor * Attenuation;
+	                    specularComponent = specularComponent + specularColor * Attenuation;
+                    }
+
+                    //gl_FragColor = vec4((textureColor * diffuseComponent).rgb , textureColor.a);
+                    //gl_FragColor = vec4((textureColor * lightAmbient).rgb, 1.0);
+                    //gl_FragColor = vec4((lightAmbient + diffuseColor).rgb * textureColor.rgb + specularColor.xyz , textureColor.a);
+                    gl_FragColor = vec4((ambientComponent + diffuseComponent).rgb * textureColor.rgb + specularComponent.xyz , textureColor.a);
+                    //gl_FragColor = vec4((mix(diffuseColor, lightAmbient, ambientWeight) * textureColor).xyz, textureColor.w);
+                    //gl_FragColor = vec4((mix(diffuseColor, lightAmbient, ambientWeight) * textureColor + specularColor).xyz, textureColor.w);
+                    //gl_FragColor = vec4((mix(diffuseComponent, ambientComponent, ambientWeightComponent) * textureColor + specularComponent).xyz, textureColor.w);
+                    //gl_FragColor = specularColor;
+                    //gl_FragColor = spotComponent;
+
+                }
+            } else {
+                vec4 textureColor = texture2D(u_sampler, vec2(v_texCoord.s, v_texCoord.t));
+                gl_FragColor = textureColor;
+            }
         }
         
     </script>
