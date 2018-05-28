@@ -3,7 +3,7 @@ var camera;
 
 // switches
 var lighting = true;
-var wireframe = false;
+var wireframe = true;
 
 var objects = [];
 var shaders = [];

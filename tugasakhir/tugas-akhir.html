@@ -124,18 +124,18 @@
                             }
                         }
 
-                        gl_FragColor = lightColor;
+                        //gl_FragColor = lightColor;
 
                         // Lets multiply just the color portion (not the alpha)
                         // by the light
-                        gl_FragColor.rgb *= light;
+                        //gl_FragColor.rgb *= light;
                       
                         // Just add in the specular
-                        gl_FragColor.rgb += specular;
+                        //gl_FragColor.rgb += specular;
 
                         
-                        //diffuseComponent = diffuseComponent + lightColor * light;
-                        //specularComponent = specularComponent + lightColor * specular;
+                        diffuseComponent = diffuseComponent + lightColor * light;
+                        specularComponent = specularComponent + lightColor * specular;
                     } 
                     if (u_lightType[i] == 1) {
                         // for diffuse
