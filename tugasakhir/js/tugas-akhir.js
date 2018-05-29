@@ -3,7 +3,7 @@ var camera;
 
 // switches
 var lighting = true;
-var wireframe = true;
+var wireframe = false;
 
 var objects = [];
 var shaders = [];
@@ -112,7 +112,6 @@ function initShaderVariables() {
 }
 
 
-
 function initModels() {
   models[0] = new Model();
   models[0].vertices = [
@@ -160,9 +159,64 @@ function initModels() {
     0.0, 0.0, 1.0, 1.0,
     0.0, 1.0, 0.0, 1.0
   ];
+
+  models[0].indices = [
+		0, 1, 2,     
+		3,4,5,
+		6,7,8,
+		9,10,11
+  ];
+
   models[0].colorInfo.itemSize = 4;
-  models[0].numItems = 12;
-  models[0] = models[0];
+  models[0].colorInfo.numItems = 12;
+	models[0].textureCoordinate = [
+      // Front face
+	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+
+      // Back face
+	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+
+      // Top face
+	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+
+      // Bottom face
+	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+    ];
+  models[0].textureInfo.itemSize = 2;
+  models[0].textureInfo.numItems = 12;
+  models[0].indexInfo.itemSize = 1;
+  models[0].indexInfo.numItems = 12;
+models[0].vertexNormal = [
+      // Front face
+       0.0,  0.0,  1.0,
+       0.0,  0.0,  1.0,
+       0.0,  0.0,  1.0,
+      // Back face
+       0.0,  0.0, -1.0,
+       0.0,  0.0, -1.0,
+       0.0,  0.0, -1.0,
+
+
+      // Right face
+       1.0,  0.0,  0.0,
+       1.0,  0.0,  0.0,
+       1.0,  0.0,  0.0,
+
+      // Left face
+      -1.0,  0.0,  0.0,
+      -1.0,  0.0,  0.0,
+      -1.0,  0.0,  0.0,
+    ];
+    models[0].normalInfo.itemSize = 3;
+    models[0].normalInfo.numItems = 12;
 
   models[1] = new Model();
   models[1].vertices = [
@@ -429,7 +483,7 @@ function initObjects () {
   objects[0].scale = vec3(0.5, 0.5, 0.5)
   //objects[0].scale = vec3(2,1,1);
   objects[1] = new GameObject();
-  objects[1].model = models[1];
+  objects[1].model = models[0];
   objects[1].shader = shaders[1];
   objects[1].position = vec3(1.5, 0, -10.0 );
 
@@ -465,6 +519,14 @@ function handleLoadedTexture(texture) {
 }
 
 function initTextures() {
+	models[0].textureInfo.address = gl.createTexture();
+  models[0].textureInfo.image = new Image();
+  models[0].textureInfo.image.onload = function() {
+    handleLoadedTexture(models[0].textureInfo)
+  }
+
+  models[0].textureInfo.image.src = "img/floor.png";
+  
   models[1].textureInfo.address = gl.createTexture();
   models[1].textureInfo.image = new Image();
   models[1].textureInfo.image.onload = function() {
