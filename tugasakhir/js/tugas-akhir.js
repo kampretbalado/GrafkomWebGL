@@ -3,7 +3,7 @@ var camera;
 
 // switches
 var lighting = true;
-var wireframe = false;
+var wireframe = true;
 var cameraOnBill=false;
 var speed= [ 0, 0, 0];
 var objects = [];
@@ -1236,7 +1236,27 @@ window.onload = function init() {
     document.getElementById("needle").onchange = function(event) {
         speed[2] =  event.target.value;
     };
-
+	document.getElementById("wireframe").onchange = function(event) {
+        location.reload(); 
+    };
+	document.getElementById("light").onchange = function(event) {
+        location.reload(); 
+    };
+	document.getElementById("camera").onchange = function(event) {
+        var checkBox = document.getElementById("camera");
+		cameraOnBill=checkBox.checked;
+		if(!cameraOnBill){
+			camera.position = vec3(0,0,10);
+			camera.rotation = vec3(0,0,0);	
+		}
+    };
+	
+	var checkBox = document.getElementById("wireframe");
+	wireframe = checkBox.checked;
+	checkBox = document.getElementById("light");
+	lighting = checkBox.checked;
+	checkBox = document.getElementById("camera");
+	cameraOnBill=checkBox.checked;
   tick();
 }
 
