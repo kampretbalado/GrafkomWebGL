@@ -1,6 +1,2 @@
-todo
-camera tempel ke 
-	Bill
-	
-bill muter
+todo	
 wireframe refresh

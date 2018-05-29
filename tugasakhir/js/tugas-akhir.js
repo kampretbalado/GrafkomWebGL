@@ -5,7 +5,7 @@ var camera;
 var lighting = true;
 var wireframe = false;
 var cameraOnBill=false;
-
+var speed= [ 0, 0, 0];
 var objects = [];
 var shaders = [];
 var models = [];
@@ -1049,9 +1049,9 @@ function animate() {
     lastTime = timeNow;
     
     objects[0].rotation = vec3(0, r % 360, 0);
-    objects[11].rotation = vec3(0, r % 360, 0);
-    objects[2].rotation = vec3(0,  0,r % 360);
-    objects[6].rotation = vec3(0,  0,r % 360);
+    objects[11].rotation = vec3(0, speed[0]*r % 360, 0);
+    objects[2].rotation = vec3(0,  0,speed[2]*r % 360);
+    objects[6].rotation = vec3(0,  0,speed[1]*r % 360);
     // circle light around object[1]
     var pos = lights[1].position;
     var cent = objects[1].position;
@@ -1226,6 +1226,16 @@ window.onload = function init() {
 
   document.onkeydown = handleKeyDown;
   document.onkeyup = handleKeyUp;
+
+   document.getElementById("tri").onchange = function(event) {
+        speed[0] = event.target.value;
+    };
+    document.getElementById("shuriken").onchange = function(event) {
+        speed[1] = event.target.value;
+    };
+    document.getElementById("needle").onchange = function(event) {
+        speed[2] =  event.target.value;
+    };
 
   tick();
 }
