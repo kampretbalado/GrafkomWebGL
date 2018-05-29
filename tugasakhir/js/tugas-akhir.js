@@ -3,14 +3,14 @@ var camera;
 
 // switches
 var lighting = true;
-var wireframe = true;
+var wireframe = false;
 
 var objects = [];
 var shaders = [];
 var models = [];
 var lights = [];
 
-var ambientColor = vec4(0.4, 0.4, 0.4, 1.0);
+var ambientColor = vec4(0.4, 0.4, 0.4,0.4);
 var ambientWeight = 0.8;
 
 function initCanvas() {  
@@ -160,9 +160,64 @@ function initModels() {
     0.0, 0.0, 1.0, 1.0,
     0.0, 1.0, 0.0, 1.0
   ];
+
+  models[0].indices = [
+		0, 1, 2,     
+		3,4,5,
+		6,7,8,
+		9,10,11
+  ];
+
   models[0].colorInfo.itemSize = 4;
-  models[0].numItems = 12;
-  models[0] = models[0];
+  models[0].colorInfo.numItems = 12;
+	models[0].textureCoordinate = [
+      // Front face
+	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+
+      // Back face
+	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+
+      // Top face
+	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+
+      // Bottom face
+	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+    ];
+  models[0].textureInfo.itemSize = 2;
+  models[0].textureInfo.numItems = 12;
+  models[0].indexInfo.itemSize = 1;
+  models[0].indexInfo.numItems = 12;
+models[0].vertexNormal = [
+      // Front face
+       0.0,  0.0,  1.0,
+       0.0,  0.0,  1.0,
+       0.0,  0.0,  1.0,
+      // Back face
+       0.0,  0.0, -1.0,
+       0.0,  0.0, -1.0,
+       0.0,  0.0, -1.0,
+
+
+      // Right face
+       1.0,  0.0,  0.0,
+       1.0,  0.0,  0.0,
+       1.0,  0.0,  0.0,
+
+      // Left face
+      -1.0,  0.0,  0.0,
+      -1.0,  0.0,  0.0,
+      -1.0,  0.0,  0.0,
+    ];
+    models[0].normalInfo.itemSize = 3;
+    models[0].normalInfo.numItems = 12;
 
   models[1] = new Model();
   models[1].vertices = [
@@ -422,32 +477,142 @@ function initBuffers() {
 }
 
 function initObjects () {
-  objects[0] = new GameObject();
-  objects[0].model = models[2];
-  objects[0].shader = shaders[1];
-  objects[0].position = vec3(-1.5, 0, -10 );
-  objects[0].scale = vec3(0.5, 0.5, 0.5)
-  //objects[0].scale = vec3(2,1,1);
-  objects[1] = new GameObject();
-  objects[1].model = models[1];
-  objects[1].shader = shaders[1];
-  objects[1].position = vec3(1.5, 0, -10.0 );
+	objects[0] = new GameObject();
+	objects[0].model = models[2];
+	objects[0].shader = shaders[1];
+	objects[0].position = vec3(5, 0, -10 );
+	objects[0].scale = vec3(0.5, 0.5, 0.5)
+	//objects[0].scale = vec3(2,1,1);
 
+	objects[1] = new GameObject();
+	objects[1].model = models[1];
+	objects[1].shader = shaders[1];
+	objects[1].position = vec3(-5, 0, -10.0 );
+	
+  objects[2] = new GameObject();
+	objects[2].model = models[1];
+	objects[2].shader = shaders[1];
+	objects[2].position = vec3(5, 1, -40.0 );
+
+	objects[3] = new GameObject();
+	objects[3].model = models[1];
+	objects[3].shader = shaders[1];
+	objects[3].position = vec3(0, -2.125, 0 );
+	objects[3].father= objects[2];
+
+	objects[4] = new GameObject();
+	objects[4].model = models[1];
+	objects[4].shader = shaders[1];
+	objects[4].position = vec3(0, -2.125, 0 );
+	objects[4].father= objects[3];
+
+  objects[5] = new GameObject();
+	objects[5].model = models[0];
+	objects[5].shader = shaders[1];
+	objects[5].position = vec3(0, -2.125, 0 );
+	objects[5].father= objects[4];
+  objects[5].rotation = vec3(180,0,0)
+
+
+  objects[6] = new GameObject();
+	objects[6].model = models[1];
+	objects[6].shader = shaders[1];
+	objects[6].position = vec3(-5, 1, -40.0 );
+
+	objects[7] = new GameObject();
+	objects[7].model = models[0];
+	objects[7].shader = shaders[1];
+	objects[7].position = vec3(0, 2.125, 0 );
+	objects[7].father= objects[6];
+
+
+  objects[8] = new GameObject();
+	objects[8].model = models[0];
+	objects[8].shader = shaders[1];
+	objects[8].position = vec3(0, -2.125, 0 );
+	objects[8].father= objects[6];
+  objects[8].rotation = vec3(180,0,0)
+
+	objects[9] = new GameObject();
+	objects[9].model = models[0];
+	objects[9].shader = shaders[1];
+	objects[9].position = vec3(2.125,0,0 );
+	objects[9].father= objects[6];
+  objects[9].rotation = vec3(0,0,-90)
+
+
+  objects[10] = new GameObject();
+	objects[10].model = models[0];
+	objects[10].shader = shaders[1];
+	objects[10].position = vec3(-2.125,0,0 );
+	objects[10].father= objects[6];
+  objects[10].rotation = vec3(0,0,90);
+
+  objects[11] = new GameObject();
+	objects[11].model = models[0];
+	objects[11].shader = shaders[1];
+	objects[11].position =  vec3(0, 1, -25.0 );
+	objects[11].scale = vec3(6, 6, 6);
+
+  objects[12] = new GameObject();
+	objects[12].model = models[1];
+	objects[12].shader = shaders[1];
+	objects[12].position = vec3(-0.5, -1.5, 0 );
+	objects[12].father= objects[11];
+  objects[12].scale = vec3(0.125, 0.5, 0.125);
+
+  objects[13] = new GameObject();
+	objects[13].model = models[1];
+	objects[13].shader = shaders[1];
+	objects[13].position = vec3(0.5, -1.5, 0 );
+	objects[13].father= objects[11];
+  objects[13].scale = vec3(0.125, 0.5, 0.125);
+
+  objects[14] = new GameObject();
+	objects[14].model = models[1];
+	objects[14].shader = shaders[1];
+	objects[14].position = vec3(1.125, 0.5, 0 );
+	objects[14].father= objects[11];
+  objects[14].scale = vec3(0.125, 0.75, 0.125);
+  objects[14].rotation = vec3(0,0,-30);
+  
+  objects[15] = new GameObject();
+	objects[15].model = models[1];
+	objects[15].shader = shaders[1];
+	objects[15].position = vec3(-1.125, 0.5, 0 );
+	objects[15].father= objects[11];
+  objects[15].scale = vec3(0.125, 0.75, 0.125);
+  objects[15].rotation = vec3(0,0,30);
+
+  objects[16] = new GameObject();
+	objects[16].model = models[1];
+	objects[16].shader = shaders[1];
+	objects[16].position = vec3(0, 1, 0 );
+	objects[16].father= objects[11];
+  objects[16].scale = vec3(0.125, 0.5,0.125);
+  objects[16].rotation = vec3(0,0,90);
+
+  objects[17] = new GameObject();
+	objects[17].model = models[1];
+	objects[17].shader = shaders[1];
+	objects[17].position = vec3(0, 1.5, 0 );
+	objects[17].father= objects[11];
+  objects[17].scale = vec3(0.125, 0.5,0.125);
 }
 
 function initLights() {
   
   lights[0] = new Light(1); // directional
-  lights[0].lightColor = vec4(0.0, 0.0, 0.0, 1.0);
+  lights[0].lightColor = vec4(0.8, 0.0, 0.0, 1.0);
   lights[0].lightDirection = vec3(-1.0, -1.0, -1.0);
   
   lights[1] = new Light(2); // point
   lights[1].position = vec3(-10.0, 0.0, 0.0);
-  lights[1].lightColor = vec4(0.0, 0.0, 0.0, 1.0);
+  lights[1].lightColor = vec4(0.0, 0.8, 0.0, 1.0);
 
   lights[2] = new Light(0); // spot
   lights[2].position = vec3(-1.5, 0.0, 0.0);
-  lights[2].lightColor = vec4(0.4, 0.8, 0.4, 0.0);
+  lights[2].lightColor = vec4(0.0, 0.0, 0.8, 0.0);
   lights[2].lightDirection = vec3(0.0,0.0,-1.0);
   lights[2].spotLimit = 30.0;
 
@@ -465,13 +630,21 @@ function handleLoadedTexture(texture) {
 }
 
 function initTextures() {
+  models[0].textureInfo.address = gl.createTexture();
+  models[0].textureInfo.image = new Image();
+  models[0].textureInfo.image.onload = function() {
+    handleLoadedTexture(models[0].textureInfo)
+  }
+
+  models[0].textureInfo.image.src = "img/floor.png";
+
   models[1].textureInfo.address = gl.createTexture();
   models[1].textureInfo.image = new Image();
   models[1].textureInfo.image.onload = function() {
     handleLoadedTexture(models[1].textureInfo)
   }
 
-  models[1].textureInfo.image.src = "img/sad.png";
+  models[1].textureInfo.image.src = "img/floor.png";
 
   models[2].textureInfo.address = gl.createTexture();
   models[2].textureInfo.image = new Image();

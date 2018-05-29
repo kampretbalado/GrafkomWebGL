@@ -9,6 +9,7 @@ class GameObject {
     this.shader = 0; // of Shader type
     this.angle = 0;
     this.axis = vec3(0,0,0);
+	  this.father= null;
   }
 
   set position(pos) {
@@ -51,32 +52,42 @@ class GameObject {
     this._isDirty = true;
   }
 
-  getWorldMatrix() {
-    if (this.isDirty) {
-      var scaleMatrix = scalem(this._scale[0], this._scale[1], this._scale[2]);
-      /*
-      var rotX = rotateX(this._rotation[0]);
-      var rotY = rotateY(this._rotation[1]);
-      var rotZ = rotateZ(this._rotation[2]);
+	getWorldMatrix() {
+		//f (this.isDirty) {
+			var scaleMatrix = scalem(this._scale[0], this._scale[1], this._scale[2]);
+			/*
+			var rotX = rotateX(this._rotation[0]);
+			var rotY = rotateY(this._rotation[1]);
+			var rotZ = rotateZ(this._rotation[2]);
 
-      var rotMatrix = mult(rotY, mult(rotX, rotZ));
-      */
-     var rotX = rotate(this._rotation[0], vec3(1.0, 0.0, 0.0));
-     var rotY = rotate(this._rotation[1], vec3(0.0, 1.0, 0.0));
-     var rotZ = rotate(this._rotation[2], vec3(0.0, 0.0, 1.0));
+			var rotMatrix = mult(rotY, mult(rotX, rotZ));
+			*/
+			var rotX = rotate(this._rotation[0], vec3(1.0, 0.0, 0.0));
+			var rotY = rotate(this._rotation[1], vec3(0.0, 1.0, 0.0));
+			var rotZ = rotate(this._rotation[2], vec3(0.0, 0.0, 1.0));
 
-     var rotMatrix = mult(rotY, mult(rotX, rotZ));
+			var rotMatrix = mult(rotY, mult(rotX, rotZ));
 
-      var transMatrix = translate(this._position[0], this._position[1], this._position[2]);
-      
-      var world = mult(rotMatrix, scaleMatrix);
-      this._worldMatrix = mult(transMatrix, world);
+			var transMatrix = translate(this._position[0], this._position[1], this._position[2]);
+			var world=mat4();
+			if (this.father!=null){
+				world= this.father.getWorldMatrix();
+				world = mult(world,transMatrix);
+				world = mult(world,rotMatrix);			
+				world = mult(world,scaleMatrix);	
+			}
+			else{
+				world = mult(world,transMatrix);
+				world = mult(world,rotMatrix);
+				world = mult(world,scaleMatrix);
+			}
+			this._worldMatrix=world;
 
-      this.isDirty = false;
-    }
-    
-    return this._worldMatrix;
-  }
+			this.isDirty = false;
+		//}
+
+		return this._worldMatrix;
+	}
 }
 
 
@@ -248,7 +259,7 @@ class Light {
     this.position = new vec3(0.0, 0.0, 0.0);
     this.lightDirection = new vec3(1.0, 1.0, 1.0);
     this.lightColor = new vec4(0.8, 0.8, 0.8);
-    this.specularPower = 5.0;
+    this.specularPower = 5;
     this.spotLimit = 30.0; // in degrees
     
     // 0 = spot, 1 = directional, 2 = point

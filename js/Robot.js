@@ -410,11 +410,10 @@ var renderSnake = function() {
     snakeBody();
 
     modelViewMatrix  = mult(modelViewMatrix, translate(0.0, snake.length, 0.0));
-    modelViewMatrix  = mult(modelViewMatrix, rotate(-x, 0, 0, 1) );
     snakeBody();
 
     modelViewMatrix  = mult(modelViewMatrix, translate(0.0, snake.length, 0.0));
-    modelViewMatrix  = mult(modelViewMatrix, rotate(-x, 0, 0, 1) );
+    modelViewMatrix  = mult(modelViewMatrix, rotate(x, 0, 0, 1) );
     snakeBody();
 
     //pos
