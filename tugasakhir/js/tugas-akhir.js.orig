@@ -4,7 +4,6 @@ var camera;
 // switches
 var lighting = true;
 var wireframe = false;
-var cameraOnBill=false;
 
 var objects = [];
 var shaders = [];
@@ -113,7 +112,6 @@ function initShaderVariables() {
 }
 
 
-
 function initModels() {
   models[0] = new Model();
   models[0].vertices = [
@@ -173,23 +171,24 @@ function initModels() {
   models[0].colorInfo.numItems = 12;
 	models[0].textureCoordinate = [
       // Front face
-	0.25, 1.0,
-	0.5,0,
-	0.0, 0.0,
+	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
 
       // Back face
-	0.75, 1.0,
-	1.0,0,
 	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
 
       // Top face
-0.75, 1.0,
-	1.0,0,
 	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+
       // Bottom face
-0.75, 1.0,
-	1.0,0,
 	0.5, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
     ];
   models[0].textureInfo.itemSize = 2;
   models[0].textureInfo.numItems = 12;
@@ -438,264 +437,6 @@ models[0].vertexNormal = [
 
     models[2].indexInfo.itemSize = 1;
     models[2].indexInfo.numItems = indexData.length;
-
-    models[3] = new Model();
-  models[3].vertices = [
-    // Front face
-    0.0,  1.0,  0.0,
-    -1.0, -1.0,  1.0,
-    1.0, -1.0,  1.0,
-
-    // Right face
-    0.0,  1.0,  0.0,
-    1.0, -1.0,  1.0,
-    1.0, -1.0, -1.0,
-
-    // Back face
-    0.0,  1.0,  0.0, 
-    1.0, -1.0, -1.0,
-    -1.0, -1.0, -1.0,
-
-    // Left face
-    0.0,  1.0,  0.0,
-    -1.0, -1.0, -1.0,
-    -1.0, -1.0,  1.0
-  ];
-  models[3].vertexInfo.itemSize = 3;
-  models[3].vertexInfo.numItems = 12;
-
-  models[3].colors = [
-    // Front face
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 1.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0,
-
-    // Right face
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0,
-    0.0, 1.0, 0.0, 1.0,
-
-    // Back face
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 1.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0,
-
-    // Left face
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0,
-    0.0, 1.0, 0.0, 1.0
-  ];
-
-  models[3].indices = [
-		0, 1, 2,     
-		3,4,5,
-		6,7,8,
-		9,10,11
-  ];
-
-  models[3].colorInfo.itemSize = 4;
-  models[3].colorInfo.numItems = 12;
-	models[3].textureCoordinate = [
-      // Front face
-	0.5, 0.0,
-	1.0, 0.0,
-	1.0, 1.0,
-
-      // Back face
-	0.5, 0.0,
-	1.0, 0.0,
-	1.0, 1.0,
-
-      // Top face
-	0.5, 0.0,
-	1.0, 0.0,
-	1.0, 1.0,
-
-      // Bottom face
-	0.5, 0.0,
-	1.0, 0.0,
-	1.0, 1.0,
-    ];
-  models[3].textureInfo.itemSize = 2;
-  models[3].textureInfo.numItems = 12;
-  models[3].indexInfo.itemSize = 1;
-  models[3].indexInfo.numItems = 12;
-models[3].vertexNormal = [
-      // Front face
-       0.0,  0.0,  1.0,
-       0.0,  0.0,  1.0,
-       0.0,  0.0,  1.0,
-      // Back face
-       0.0,  0.0, -1.0,
-       0.0,  0.0, -1.0,
-       0.0,  0.0, -1.0,
-
-
-      // Right face
-       1.0,  0.0,  0.0,
-       1.0,  0.0,  0.0,
-       1.0,  0.0,  0.0,
-
-      // Left face
-      -1.0,  0.0,  0.0,
-      -1.0,  0.0,  0.0,
-      -1.0,  0.0,  0.0,
-    ];
-    models[3].normalInfo.itemSize = 3;
-    models[3].normalInfo.numItems = 12;
-
-    models[4] = new Model();
-  models[4].vertices = [
-      // Front face
-      -1.0, -1.0,  1.0,
-       1.0, -1.0,  1.0,
-       1.0,  1.0,  1.0,
-      -1.0,  1.0,  1.0,
-
-      // Back face
-      -1.0, -1.0, -1.0,
-      -1.0,  1.0, -1.0,
-       1.0,  1.0, -1.0,
-       1.0, -1.0, -1.0,
-
-      // Top face
-      -1.0,  1.0, -1.0,
-      -1.0,  1.0,  1.0,
-       1.0,  1.0,  1.0,
-       1.0,  1.0, -1.0,
-
-      // Bottom face
-      -1.0, -1.0, -1.0,
-       1.0, -1.0, -1.0,
-       1.0, -1.0,  1.0,
-      -1.0, -1.0,  1.0,
-
-      // Right face
-       1.0, -1.0, -1.0,
-       1.0,  1.0, -1.0,
-       1.0,  1.0,  1.0,
-       1.0, -1.0,  1.0,
-
-      // Left face
-      -1.0, -1.0, -1.0,
-      -1.0, -1.0,  1.0,
-      -1.0,  1.0,  1.0,
-      -1.0,  1.0, -1.0
-  ];
-  models[4].vertexInfo.itemSize = 3;
-  models[4].vertexInfo.numItems = 24;
-
-  models[4].colors = [
-      [1.0, 0.0, 0.0, 1.0], // Front face
-      [1.0, 1.0, 0.0, 1.0], // Back face
-      [0.0, 1.0, 0.0, 1.0], // Top face
-      [1.0, 0.5, 0.5, 1.0], // Bottom face
-      [1.0, 0.0, 1.0, 1.0], // Right face
-      [0.0, 0.0, 1.0, 1.0]  // Left face
-  ];
-  var unpackedColors = [];
-  for (var i = 0; i < models[1].colors.length; i++) {
-      var color = models[1].colors[i];
-      for (var j=0; j < 4; j++) {
-          unpackedColors = unpackedColors.concat(color);
-      }
-  }
-  models[4].colors = unpackedColors;
-
-  models[4].colorInfo.itemSize = 4;
-  models[4].colorInfo.numItems = 24;
-
-  models[4].indices = [
-      0, 1, 2,      0, 2, 3,    // Front face
-      4, 5, 6,      4, 6, 7,    // Back face
-      8, 9, 10,     8, 10, 11,  // Top face
-      12, 13, 14,   12, 14, 15, // Bottom face
-      16, 17, 18,   16, 18, 19, // Right face
-      20, 21, 22,   20, 22, 23  // Left face
-  ];
-  models[4].indexInfo.itemSize = 1;
-  models[4].indexInfo.numItems = 36;
-
-  models[4].textureCoordinate = [
-      // Front face
-      0.0, 0.0,
-      1.0, 0.0,
-      1.0, 1.0,
-      0.0, 1.0,
-
-      // Back face
-      1.0, 0.0,
-      1.0, 1.0,
-      0.0, 1.0,
-      0.0, 0.0,
-
-      // Top face
-      0.0, 1.0,
-      0.0, 0.0,
-      1.0, 0.0,
-      1.0, 1.0,
-
-      // Bottom face
-      1.0, 1.0,
-      0.0, 1.0,
-      0.0, 0.0,
-      1.0, 0.0,
-
-      // Right face
-      1.0, 0.0,
-      1.0, 1.0,
-      0.0, 1.0,
-      0.0, 0.0,
-
-      // Left face
-      0.0, 0.0,
-      1.0, 0.0,
-      1.0, 1.0,
-      0.0, 1.0,
-    ];
-    models[4].textureInfo.itemSize = 2;
-    models[4].textureInfo.numItems = 24;
-
-    models[4].vertexNormal = [
-      // Front face
-       0.0,  0.0,  1.0,
-       0.0,  0.0,  1.0,
-       0.0,  0.0,  1.0,
-       0.0,  0.0,  1.0,
-
-      // Back face
-       0.0,  0.0, -1.0,
-       0.0,  0.0, -1.0,
-       0.0,  0.0, -1.0,
-       0.0,  0.0, -1.0,
-
-      // Top face
-       0.0,  1.0,  0.0,
-       0.0,  1.0,  0.0,
-       0.0,  1.0,  0.0,
-       0.0,  1.0,  0.0,
-
-      // Bottom face
-       0.0, -1.0,  0.0,
-       0.0, -1.0,  0.0,
-       0.0, -1.0,  0.0,
-       0.0, -1.0,  0.0,
-
-      // Right face
-       1.0,  0.0,  0.0,
-       1.0,  0.0,  0.0,
-       1.0,  0.0,  0.0,
-       1.0,  0.0,  0.0,
-
-      // Left face
-      -1.0,  0.0,  0.0,
-      -1.0,  0.0,  0.0,
-      -1.0,  0.0,  0.0,
-      -1.0,  0.0,  0.0,
-    ];
-    models[4].normalInfo.itemSize = 3;
-    models[4].normalInfo.numItems = 24;
-
 }
 
 
@@ -735,6 +476,7 @@ function initBuffers() {
 }
 
 function initObjects () {
+<<<<<<< HEAD
 	objects[0] = new GameObject();
 	objects[0].model = models[2];
 	objects[0].shader = shaders[1];
@@ -748,7 +490,7 @@ function initObjects () {
 	objects[1].position = vec3(-5, 0, -10.0 );
 	
   objects[2] = new GameObject();
-	objects[2].model = models[3];
+	objects[2].model = models[1];
 	objects[2].shader = shaders[1];
 	objects[2].position = vec3(5, 1, -40.0 );
 
@@ -765,7 +507,7 @@ function initObjects () {
 	objects[4].father= objects[3];
 
   objects[5] = new GameObject();
-	objects[5].model = models[3];
+	objects[5].model = models[0];
 	objects[5].shader = shaders[1];
 	objects[5].position = vec3(0, -2.125, 0 );
 	objects[5].father= objects[4];
@@ -778,21 +520,21 @@ function initObjects () {
 	objects[6].position = vec3(-5, 1, -40.0 );
 
 	objects[7] = new GameObject();
-	objects[7].model = models[3];
+	objects[7].model = models[0];
 	objects[7].shader = shaders[1];
 	objects[7].position = vec3(0, 2.125, 0 );
 	objects[7].father= objects[6];
 
 
   objects[8] = new GameObject();
-	objects[8].model = models[3];
+	objects[8].model = models[0];
 	objects[8].shader = shaders[1];
 	objects[8].position = vec3(0, -2.125, 0 );
 	objects[8].father= objects[6];
   objects[8].rotation = vec3(180,0,0)
 
 	objects[9] = new GameObject();
-	objects[9].model = models[3];
+	objects[9].model = models[0];
 	objects[9].shader = shaders[1];
 	objects[9].position = vec3(2.125,0,0 );
 	objects[9].father= objects[6];
@@ -800,7 +542,7 @@ function initObjects () {
 
 
   objects[10] = new GameObject();
-	objects[10].model = models[3];
+	objects[10].model = models[0];
 	objects[10].shader = shaders[1];
 	objects[10].position = vec3(-2.125,0,0 );
 	objects[10].father= objects[6];
@@ -813,21 +555,21 @@ function initObjects () {
 	objects[11].scale = vec3(6, 6, 6);
 
   objects[12] = new GameObject();
-	objects[12].model = models[4];
+	objects[12].model = models[1];
 	objects[12].shader = shaders[1];
 	objects[12].position = vec3(-0.5, -1.5, 0 );
 	objects[12].father= objects[11];
   objects[12].scale = vec3(0.125, 0.5, 0.125);
 
   objects[13] = new GameObject();
-	objects[13].model = models[4];
+	objects[13].model = models[1];
 	objects[13].shader = shaders[1];
 	objects[13].position = vec3(0.5, -1.5, 0 );
 	objects[13].father= objects[11];
   objects[13].scale = vec3(0.125, 0.5, 0.125);
 
   objects[14] = new GameObject();
-	objects[14].model = models[4];
+	objects[14].model = models[1];
 	objects[14].shader = shaders[1];
 	objects[14].position = vec3(1.125, 0.5, 0 );
 	objects[14].father= objects[11];
@@ -835,7 +577,7 @@ function initObjects () {
   objects[14].rotation = vec3(0,0,-30);
   
   objects[15] = new GameObject();
-	objects[15].model = models[4];
+	objects[15].model = models[1];
 	objects[15].shader = shaders[1];
 	objects[15].position = vec3(-1.125, 0.5, 0 );
 	objects[15].father= objects[11];
@@ -843,20 +585,32 @@ function initObjects () {
   objects[15].rotation = vec3(0,0,30);
 
   objects[16] = new GameObject();
-	objects[16].model = models[4];
+	objects[16].model = models[1];
 	objects[16].shader = shaders[1];
 	objects[16].position = vec3(0, 1, 0 );
 	objects[16].father= objects[11];
-  objects[16].scale = vec3(0.125, 0.5,0.5);
+  objects[16].scale = vec3(0.125, 0.5,0.125);
   objects[16].rotation = vec3(0,0,90);
 
   objects[17] = new GameObject();
-	objects[17].model = models[4];
+	objects[17].model = models[1];
 	objects[17].shader = shaders[1];
 	objects[17].position = vec3(0, 1.5, 0 );
 	objects[17].father= objects[11];
-  objects[17].scale = vec3(0.25, 0.5,0.25);
-  
+  objects[17].scale = vec3(0.125, 0.5,0.125);
+=======
+  objects[0] = new GameObject();
+  objects[0].model = models[2];
+  objects[0].shader = shaders[1];
+  objects[0].position = vec3(-1.5, 0, -10 );
+  objects[0].scale = vec3(0.5, 0.5, 0.5)
+  //objects[0].scale = vec3(2,1,1);
+  objects[1] = new GameObject();
+  objects[1].model = models[0];
+  objects[1].shader = shaders[1];
+  objects[1].position = vec3(1.5, 0, -10.0 );
+
+>>>>>>> 32979a1445a898db14f4580bff05100baae2f02d
 }
 
 function initLights() {
@@ -889,14 +643,22 @@ function handleLoadedTexture(texture) {
 }
 
 function initTextures() {
+<<<<<<< HEAD
   models[0].textureInfo.address = gl.createTexture();
+=======
+	models[0].textureInfo.address = gl.createTexture();
+>>>>>>> 32979a1445a898db14f4580bff05100baae2f02d
   models[0].textureInfo.image = new Image();
   models[0].textureInfo.image.onload = function() {
     handleLoadedTexture(models[0].textureInfo)
   }
 
-  models[0].textureInfo.image.src = "img/bill2.jpg";
+  models[0].textureInfo.image.src = "img/floor.png";
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 32979a1445a898db14f4580bff05100baae2f02d
   models[1].textureInfo.address = gl.createTexture();
   models[1].textureInfo.image = new Image();
   models[1].textureInfo.image.onload = function() {
@@ -912,23 +674,6 @@ function initTextures() {
   }
 
   models[2].textureInfo.image.src = "img/moon.gif";
-
-   models[3].textureInfo.address = gl.createTexture();
-  models[3].textureInfo.image = new Image();
-  models[3].textureInfo.image.onload = function() {
-    handleLoadedTexture(models[3].textureInfo)
-  }
-
-  models[3].textureInfo.image.src = "img/floor.png";
-
-  models[4].textureInfo.address = gl.createTexture();
-  models[4].textureInfo.image = new Image();
-  models[4].textureInfo.image.onload = function() {
-    handleLoadedTexture(models[3].textureInfo)
-  }
-
-  models[4].textureInfo.image.src = "img/black.gif";
-
 
   
 }
@@ -1048,10 +793,8 @@ function animate() {
     }
     lastTime = timeNow;
     
-    objects[0].rotation = vec3(0, r % 360, 0);
-    objects[11].rotation = vec3(0, r % 360, 0);
-    objects[2].rotation = vec3(0,  0,r % 360);
-    objects[6].rotation = vec3(0,  0,r % 360);
+    //objects[0].rotation = vec3(0, r % 360, 0);
+    //objects[1].rotation = vec3(r % 360, r % 360, 0);
     // circle light around object[1]
     var pos = lights[1].position;
     var cent = objects[1].position;
@@ -1200,15 +943,8 @@ function movement() {
 function tick() {
   requestAnimFrame(tick);
   animate();
-
-
   draw();
   handleKeys();
-  if (cameraOnBill){
-    camera.father=objects[11];
-  }else{
-    camera.father=null;
-  }
   movement();
   
 }

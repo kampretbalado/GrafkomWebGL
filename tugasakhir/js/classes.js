@@ -99,7 +99,7 @@ class Camera {
     
     this.projectionMatrix = perspective(fov, aspect, near, far);
     
-    this.position = vec3(0,0,0);
+    this.position = vec3(0,0,10);
     this.rotation = vec3(0,0,0);
     
     this.fov = fov;
@@ -107,7 +107,7 @@ class Camera {
     this.near = near;
     this.far = far;
     this.isDirty = true;
-    
+    this.father=null;
     this.speed = speed;
 
     this.applyWorldMatrix();
@@ -156,7 +156,7 @@ class Camera {
     var rotMatrix = mult(rotY, mult(rotX, rotZ));
     
     var transMatrix = translate(this._position[0], this._position[1], this._position[2]);
-    
+   
     this._worldMatrix = mult(transMatrix, rotMatrix);
     
     return this._worldMatrix;
@@ -181,22 +181,32 @@ class Camera {
   }
 
   moveCamera(moveVector) {
-    var s = this.speed;
-    var temp = scale(s , moveVector);
-    temp = vec4(temp, 1.0);
-    
-    temp = mult(this.getWorldMatrix(), temp);
-    //temp = add(this._position, vec3(temp));
-    
-    temp = vec3(temp);
-    this._position = temp;
-    this.isDirty = true;
+    if (this.father==null){
+      var s = this.speed;
+      var temp = scale(s , moveVector);
+      temp = vec4(temp, 1.0);
+      
+      temp = mult(this.getWorldMatrix(), temp);
+      //temp = add(this._position, vec3(temp));
+      
+      temp = vec3(temp);
+      this._position = temp;
+      this.isDirty = true;
+    }else{
+      this._position = vec3(this.father.position[0],this.father.position[1],this.father.position[2]+3.75);
+      this.isDirty = true;
+    }
   }
 
   rotateCamera(rotVector) {
-    var rot = scale(this.speed*20, rotVector);
-    this._rotation = add(vec3(rot), this._rotation);
-    this.isDirty = true;
+    if (this.father==null){
+      var rot = scale(this.speed*20, rotVector);
+      this._rotation = add(vec3(rot), this._rotation);
+      this.isDirty = true;
+    }else{
+      this._rotation = vec3(this.father.rotation[0],this.father.rotation[1]+180,this.father.rotation[2]);
+      this.isDirty = true;
+    }
   }
 
 }
