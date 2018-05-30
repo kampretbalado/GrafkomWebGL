@@ -193,8 +193,17 @@ class Camera {
       this._position = temp;
       this.isDirty = true;
     }else{
-      this._position = vec3(this.father.position[0],this.father.position[1],this.father.position[2]+3.75);
+      var diffPos=vec3(
+        3.75 * Math.sin(this.father.rotation[1]* (Math.PI / 180)),
+        0,
+        3.75 * Math.cos(this.father.rotation[1]* (Math.PI / 180))
+        );
+      this._position = vec3(
+        this.father.position[0]+diffPos[0],
+        this.father.position[1],
+        this.father.position[2]+diffPos[2]);
       this.isDirty = true;
+      console.log(this._position);
     }
   }
 
